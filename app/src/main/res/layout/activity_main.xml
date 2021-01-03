@@ -10,15 +10,30 @@
         <import type="android.view.View"/>
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        android:orientation="vertical">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/new_quotes"
+            android:onClick="addQuote"
+            android:id="@+id/quote_add"/>
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/quote_pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            app:isGone="@{viewmodel.hasNoQuotes}"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/no_quotes"
+            android:textSize="36sp"
+            app:isGone="@{!viewmodel.hasNoQuotes}"
+            android:gravity="center"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </layout>
