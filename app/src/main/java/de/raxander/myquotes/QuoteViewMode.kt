@@ -1,10 +1,9 @@
 package de.raxander.myquotes
 
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.*
+import kotlinx.coroutines.launch
 
 /*
  * Quote(
@@ -21,23 +20,20 @@ Quote(
 "Nichts ist so beständig wie der Wandel.", "-- Heraklit", "480 v. Chr."
 )
  */
-class QuoteViewMode : ViewModel() {
-    val quotes: LiveData<MutableList<Quote>>
-        get() = _quotes
+class QuoteViewMode(application: Application) : AndroidViewModel(application) {
+    private var quoteDao = AppDatabase.getDatabase(application).quoteDao()
+    val quotes = quoteDao.getQuotes()
 
     private val _quotes = MutableLiveData<MutableList<Quote>>().apply {
         value = mutableListOf()
     }
 
     var newQuoteAdded = false
-    val hasNoQuotes=Transformations.map(quotes){quotes.value.isNullOrEmpty()}
+    val hasNoQuotes = Transformations.map(quotes) { quotes.value.isNullOrEmpty() }
 
-    fun createQuote(text: String, author: String, year: String) {
+    fun createQuote(text: String, author: String, year: String) = viewModelScope.launch {
         newQuoteAdded = true
-        val quote = Quote(text, author, year)
-        val list = _quotes.value ?: mutableListOf()
-        list.add(quote)
-        _quotes.value = list
+        quoteDao.insert(Quote(text, author, year))
     }
 
 
